@@ -5,7 +5,7 @@
 #  MIT Licensed
 
 
-tooltip: "%a, %b %e, %Y, %l:%M %p %z"
+tooltip: "%Y %b %e, %a, %l:%M %p %z"
 post:
-  long: "%b %e, %Y"
+  long: "%Y %b %e"
   short: "%b %e"
