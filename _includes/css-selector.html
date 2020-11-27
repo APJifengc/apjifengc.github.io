@@ -12,17 +12,17 @@
 
 {% elsif page.layout == 'page' %}
 
-  {% if page.collection == 'tabs' and page.title != 'About' %}
+  {% if page.collection == 'tabs' and page.title != '关于' %}
 
-    {% if page.title == 'Categories' %}
+    {% if page.title == '目录' %}
       <link rel="preload" href="{{ '/assets/css/categories.css' | relative_url }}" as="style">
       <link rel="stylesheet" href="{{ '/assets/css/categories.css' | relative_url }}">
    
-    {% elsif page.title == 'Tags' %}
+    {% elsif page.title == '标签' %}
       <link rel="preload" href="{{ '/assets/css/tags.css' | relative_url }}" as="style">
       <link rel="stylesheet" href="{{ '/assets/css/tags.css' | relative_url }}">
    
-    {% elsif page.title == 'Archives'%}
+    {% elsif page.title == '档案'%}
       <link rel="preload" href="{{ '/assets/css/archives.css' | relative_url }}" as="style">
       <link rel="stylesheet" href="{{ '/assets/css/archives.css' | relative_url }}">
    
