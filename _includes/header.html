@@ -1,0 +1,67 @@
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="{{ "/" | relative_url }}"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            {% for i in site.nav %}
+            <li><a href="{{ i[1] | relative_url}}">{{ i[0] }}</a></li>
+            {% endfor %}
+            <li><a class="night-mode-toggle">Dark Mode</a></li>
+        </ul>
+    </nav>
+</header>
+<script>
+        /**
+     * Night mode
+     */
+    function nightMode() {
+        var el = $('body');
+        var header = $('.g-header');
+        var nav = $('.g-nav');
+        var navText = nav.find('a');
+        var className = 'night-mode';
+        var scrollTop = $(document).scrollTop();
+        var headerHeight = header.scrollTop();
+        if (localStorage.getItem("night-mode")=="true") {
+            el.addClass(className);
+
+            document.getElementById("prism-style").href = "{{ "/assets/css/prism_dark.css" | relative_url }}";
+            if (scrollTop > headerHeight) {
+                header.css({
+                    'background-color': 'rgba(31, 33, 36, .98)',
+                    'box-shadow': '0 1px 12px rgba(31, 33, 36, .08)'
+                });
+                navText.css('color', '#A1A8B7');
+            }
+            $(".night-mode-toggle").html("Light Mode");
+        } else {
+            el.removeClass(className);
+            document.getElementById("prism-style").href = "{{ "/assets/css/prism.css" | relative_url }}";
+            if (scrollTop > headerHeight) {
+                header.css({
+                    'background-color': 'rgba(255, 255, 255, .98)',
+                    'box-shadow': '0 1px 12px rgba(0, 0, 0, .08)'
+                });
+                navText.css('color', '#666');
+            }
+            $(".night-mode-toggle").html("Dark Mode");
+        }
+    }
+
+    if ($('#nm-switch').val() === 'true') {
+        $(".night-mode-toggle").click(
+            function() {
+                if (localStorage.getItem("night-mode")=="true") {
+                    localStorage.setItem("night-mode", "false");
+                } else {
+                    localStorage.setItem("night-mode", "true");
+                }
+                nightMode();
+            }
+        );
+        nightMode();
+    }
+</script>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JsxGraph Test</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
+</head>
+<body>
+<div id="box" class="jxgbox" style="width:500px; height:500px; resize: both;"></div>
+<script type="text/javascript" charset="UTF-8"
+        src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
+<script src="graph.js"></script>
+<script>
+    const board = JXG.JSXGraph.initBoard('box', {
+        boundingbox: [-5, 5, 5, -5],
+        axis: false,
+        showCopyright: false
+    })
+    let firstNode = null
+    let overNode = null
+    let lockedNodes = []
+    document.addEventListener("mouseup", e => {
+        // console.log("up");
+        if (firstNode != null && overNode != null) {
+            if (firstNode !== overNode) {
+                // console.log(`${firstNode} -> ${overNode}`);
+                document.getElementById("input1").value = firstNode
+                document.getElementById("input2").value = overNode
+                document.getElementById("input3").value = ""
+                AddEdge()
+                document.getElementById("input3").focus()
+            }
+        }
+        firstNode = null
+        while (lockedNodes.length) {
+            lockedNodes.pop().setAttribute({fixed: false})
+        }
+    })
+    board.nodes = {}
+    board.edges = {}
+    function Add() {
+        let name = document.getElementById("input").value
+        let color = document.getElementById("color").value
+        if (board.nodes[name] == null) {
+            board.nodes[name] = node(0, 0, name, color)
+            board.nodes[name].point.on("down", e => {
+                if (e.which === 1) {
+                    document.getElementById("input").value = name
+                    document.getElementById("color").value = board.nodes[name].point.getAttribute("color")
+
+                }
+                if (e.which === 3) {
+                    board.nodes[name].point.setAttribute({fixed: true})
+                    lockedNodes.push(board.nodes[name].point)
+                    firstNode = name
+                }
+            })
+            board.nodes[name].point.on("over", e => {
+                // console.log("over");
+                overNode = name
+            })
+            board.nodes[name].point.on("out", e => {
+                // console.log("out");
+                overNode = null
+            })
+        }
+        else {
+            board.nodes[name].point.setAttribute({ color: color })
+        }
+        if (/[0-9]+/.test(name)) {
+            document.getElementById("input").value++
+        }
+    }
+    function Remove() {
+        let name = document.getElementById("input").value
+        board.removeObject(board.nodes[name].point, false)
+        board.removeObject(board.nodes[name].text, false)
+        board.nodes[name] = null
+        for (let a in board.edges) {
+            if (a.split(",")[0] === name || a.split(",")[1] === name) DeleteEdge(a)
+        }
+        if (/[0-9]+/.test(name)) {
+            document.getElementById("input").value--
+        }
+    }
+    function AddEdge() {
+        let name1 = document.getElementById("input1").value
+        let name2 = document.getElementById("input2").value
+        let text = document.getElementById("input3").value
+        let color = document.getElementById("color2").value
+        let hasArrow = document.getElementById("input4").checked
+        if (board.edges[[name1, name2]] == null) {
+            board.edges[[name1, name2]] = edge(board.nodes[name1], board.nodes[name2], text, hasArrow, color)
+            board.edges[[name1, name2]].line.on("mousedown", e => {
+                if (e.which === 1) {
+                    document.getElementById("input1").value = name1
+                    document.getElementById("input2").value = name2
+                    document.getElementById("input3").value = board.edges[[name1, name2]].text.htmlStr
+                    document.getElementById("color2").value = board.edges[[name1, name2]].line.getAttribute("strokeColor")
+                    document.getElementById("input4").checked = board.edges[[name1, name2]].line.getAttribute("lastArrow")
+                }
+                if (e.which === 3) {
+                    board.edges[[name1, name2]].line.setAttribute({fixed: true})
+                    lockedNodes.push(board.edges[[name1, name2]].line)
+                }
+            })
+        }
+        else {
+            board.edges[[name1, name2]].text.setText(text)
+            board.edges[[name1, name2]].line.setAttribute({
+                strokeColor: color,
+                lastArrow: hasArrow
+            })
+        }
+    }
+    function DeleteEdge(name) {
+        board.removeObject(board.edges[name].line, false)
+        board.removeObject(board.edges[name].text, false)
+        board.edges[name] = null
+    }
+    function RemoveEdge() {
+        let name1 = document.getElementById("input1").value
+        let name2 = document.getElementById("input2").value
+        board.removeObject(board.edges[[name1, name2]].line, false)
+        board.removeObject(board.edges[[name1, name2]].text, false)
+        board.edges[[name1, name2]] = null
+    }
+    function Generate() {
+        let view = document.getElementById("box")
+        let value = {}
+        value.width = view.style.width
+        value.height = view.style.height
+        value.nodes = []
+        for (let a in board.nodes) {
+            if (board.nodes[a] == null) continue;
+            value.nodes.push({
+                text: a,
+                x: board.nodes[a].point.X(),
+                y: board.nodes[a].point.Y(),
+                color: board.nodes[a].point.getAttribute("color")
+            })
+        }
+        value.edges = []
+        for (let a in board.edges) {
+            if (board.edges[a] == null) continue;
+            value.edges.push({
+                text: board.edges[a].text.htmlStr,
+                p1: a.split(",")[0],
+                p2: a.split(",")[1],
+                color: board.edges[a].line.getAttribute("strokeColor"),
+                hasArrow: board.edges[a].line.getAttribute("lastArrow")
+            })
+        }
+        document.getElementById("output").value = JSON.stringify(value)
+    }
+</script>
+<label for="input">Name:</label><input type="text" id="input" value="1" style="width: 40px">
+<label for="color">Color:</label><input type="text" id="color" value="#4953ff" style="width: 60px">
+<button onclick="Add()">Add</button>
+<button onclick="Remove()">Remove</button>
+<br/>
+<label for="input1">1:</label><input type="text" id="input1" value="1" style="width: 40px">
+<label for="input2">2:</label><input type="text" id="input2" value="2" style="width: 40px">
+<label for="input3">text:</label><input type="text" id="input3" value="A" style="width: 40px">
+<label for="color2">color:</label><input type="text" id="color2" value="#000000" style="width: 60px">
+<label for="input4">has arrow:</label><input type="checkbox" id="input4" checked="true">
+<button onclick="AddEdge()">Connect</button>
+<button onclick="RemoveEdge()">Disconnect</button>
+<br/>
+<button onclick="Generate()">Generate</button>
+<button onclick="Load(document.getElementById('output').value, board, document.getElementById('box'))">Load</button>
+<button onclick="Reset(board, document.getElementById('box'))">Reset</button>
+<br/>
+<label for="output"></label><textarea id="output" style="width: 500px; height: 500px"></textarea>
+</body>
+</html>

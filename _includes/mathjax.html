@@ -1,0 +1,36 @@
+<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+{% if site.mathjax %}
+	<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function(){
+			function stripcdata(x) {
+				if (x.startsWith('% <![CDATA[') && x.endsWith('%]]>'))
+					return x.substring(11,x.length-4);
+				return x;
+			}
+			document.querySelectorAll("script[type='math/tex']").forEach(function(el){
+				el.outerHTML = "\\(" + stripcdata(el.textContent) + "\\)";
+			});
+			document.querySelectorAll("script[type='math/tex; mode=display']").forEach(function(el){
+				el.outerHTML = "\\[" + stripcdata(el.textContent) + "\\]";
+			});
+			var script = document.createElement('script');
+			script.src = "https://cdn.bootcss.com/mathjax/3.0.5/es5/tex-mml-chtml.js";
+			document.head.appendChild(script);
+		}, false);
+	</script>
+    
+    <script>
+	  MathJax = {
+		tex: {
+		  inlineMath: [['$', '$'], ['\\(', '\\)']]
+		},
+		svg: {
+		  fontCache: 'global'
+		}
+	  };
+    </script>
+{% endif %}
