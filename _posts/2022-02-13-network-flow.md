@@ -37,7 +37,7 @@ struct Graph {
     int dinic(int u, int flow) {
         if (u == t) return flow;
         int rest = flow;
-        for (int &i = fst[u], v = to[i]; i; i = nxt[i], v = to[i]) {
+        for (int &i = now[u], v = to[i]; i; i = nxt[i], v = to[i]) {
             if (f[i] && d[v] == d[u] + 1) {
                 int k = dinic(v, min(rest, f[i]));
                 if (!k) d[v] = 0;
