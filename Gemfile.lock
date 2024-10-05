@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    ffi (1.15.5)
     ffi (1.15.5-x64-mingw-ucrt)
     jekyll-paginate (1.1.0)
     jekyll-watch (2.2.1)
@@ -16,18 +17,17 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rexml (3.2.5)
-    wdm (0.1.1)
-    webrick (1.7.0)
+    webrick (1.8.2)
 
 PLATFORMS
   x64-mingw-ucrt
+  x86_64-linux
 
 DEPENDENCIES
   jekyll-paginate (~> 1.1)
   jekyll-watch (~> 2.2)
   kramdown-parser-gfm (~> 1.1)
-  wdm (>= 0.1.0)
-  webrick (~> 1.7)
+  webrick (~> 1.8)
 
 BUNDLED WITH
    2.3.22
